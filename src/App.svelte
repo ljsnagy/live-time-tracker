@@ -1,11 +1,21 @@
 <script>
-	export let name;
+	import TimeSheetUpload from './components/TimeSheetUpload.svelte';
 </script>
 
 <style>
+	.container {
+		max-width: 960px;
+		margin: auto;
+	}
+
 	h1 {
-		color: purple;
+		text-align: center;
 	}
 </style>
 
-<h1>Hello {name}!</h1>
+<main class="container">
+	<header>
+		<h1>Live Time Tracker</h1>
+		<TimeSheetUpload />
+	</header>
+</main>	
