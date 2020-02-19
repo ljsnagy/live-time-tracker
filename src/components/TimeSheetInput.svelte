@@ -1,3 +1,15 @@
+<script>
+  import { createEventDispatcher } from 'svelte';
+  import parseTimeSheet from '../utils/parseTimeSheet';
+
+  const dispatch = createEventDispatcher();
+
+  async function handleTimeSheet(file) {
+    dispatch('parse', await parseTimeSheet(file));
+  }
+</script>
+
+
 <style>
   .container {
     width: 100%;
@@ -34,11 +46,14 @@
     class="file-input"
     name="file-input"
     accept=".xlsx"
+    on:change="{(e) => handleTimeSheet(e.target.files[0])}"
   >
   <label
     for="file-input"
     id="file-dropzone"
     class="file-dropzone"
+    on:drop|preventDefault="{(e) => handleTimeSheet(e.dataTransfer.files[0])}"
+    on:dragover|preventDefault
   >
     Drop Your Lesson's Time Tracker Here
   </label>
