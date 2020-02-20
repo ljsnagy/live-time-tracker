@@ -5,7 +5,9 @@
   const dispatch = createEventDispatcher();
 
   async function handleTimeSheet(file) {
-    dispatch('parse', await parseTimeSheet(file));
+    if (file) {
+      dispatch('parse', await parseTimeSheet(file));
+    }
   }
 </script>
 
@@ -30,6 +32,7 @@
     padding: 1rem;
     border: 3px dashed #AAA;
     border-radius: 6px;
+    font-size: 1.2rem;
     text-align: center;
     cursor: pointer;
   }
@@ -56,8 +59,9 @@
     on:dragover|preventDefault
   >
     Drop Your Lesson's Time Tracker Here
+    <br/>
+    <small class="file-help">
+      This is the xlsx file from the lesson plan
+    </small>
   </label>
-  <small class="file-help">
-    This is the xlsx file from the lesson plan
-  </small>
 </form>

@@ -21,7 +21,7 @@ export default async function parseTimeSheet(file) {
     activities.push({
       time: worksheet[`${TS_TIME_COL}${row}`].w,
       name: worksheet[`${TS_ACTIVITY_COL}${row}`].w,
-      length: toMinutes(worksheet[`${TS_LENGTH_COL}${row}`].w),
+      minutes: toMinutes(worksheet[`${TS_LENGTH_COL}${row}`].w),
     });
   }
 
