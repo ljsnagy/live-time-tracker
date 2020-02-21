@@ -15,26 +15,27 @@
   import Button from './Button.svelte';
 
   export let active;
-  export let seconds;
+  export let plannedSeconds;
   export let accumulatedSeconds;
   export let name;
 
   let containerEl;
-  let activityTimer = 0;
+  let elapsedSeconds = 0;
 
   const dispatch = createEventDispatcher();
 
   onMount(() => {
     const context = {
       resetTimer() {
-        activityTimer = 0;
+        elapsedSeconds = 0;
       },
     };
 
     activities.add(context);
-
     return () => activities.delete(context);
   });
+
+  $: remainingSeconds = plannedSeconds - elapsedSeconds;
 
   $: if (active && containerEl) {
     containerEl.scrollIntoView({
@@ -44,18 +45,18 @@
   }
 
   // This ticks every second in sync with the global timer.
-  timer.subscribe(() => {
-    if (active) {
-      activityTimer += 1;
-    }
-  });
+  (() => {
+    let last = 0;
+    timer.subscribe((secs) => {
+      if (active) {
+        elapsedSeconds += (secs - last);
+      }
+      last = secs;
+    });
+  })();
 
-  function getActivityTime(elapsed) {
-    return seconds - elapsed;
-  }
-
-  function getRunningTime(elapsed) {
-    return (accumulatedSeconds + seconds) - elapsed;
+  function getRunningTotal(totalElapsed) {
+    return (accumulatedSeconds + plannedSeconds) - totalElapsed;
   }
 
   function toggleCollapse(node, _active) {
@@ -136,12 +137,12 @@
   <header>
     <h2 class="title">{name}</h2>
     <p class="activity-timer">
-      <TimeDisplay seconds={getActivityTime(activityTimer)} />
+      <TimeDisplay seconds={remainingSeconds} />
     </p>
   </header>
   <div class="collapsible" use:toggleCollapse={active}>
     <p class="timer">
-      <TimeDisplay seconds={getRunningTime($timer)} />
+      <TimeDisplay seconds={getRunningTotal($timer)} />
     </p>
     <Button on:click="{() => dispatch('next')}">
       Next Activity

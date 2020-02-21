@@ -106,7 +106,7 @@
     {#each activities as { id, name, seconds }, index (id)}
       <Activity
         {name}
-        {seconds}
+        plannedSeconds={seconds}
         accumulatedSeconds={getTotalSecondsUpTo(index)}
         active="{activeActivity === index}"
         on:next={nextActivity}
