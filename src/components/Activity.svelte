@@ -119,6 +119,7 @@
 
   .timer, .activity-timer {
     font-family: monospace;
+    font-weight: bold;
   }
 
   .timer {
