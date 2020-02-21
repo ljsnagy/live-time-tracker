@@ -1,20 +1,61 @@
+<script context="module">
+	const activities = new Set();
+
+	export function resetTimers() {
+	  activities.forEach((activity) => {
+	    activity.resetTimer();
+	  });
+	}
+</script>
+
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import timer from '../stores/Timer';
+  import TimeDisplay from './Time.svelte';
   import Button from './Button.svelte';
 
   export let active;
-  export let minutes;
+  export let seconds;
+  export let accumulatedSeconds;
   export let name;
 
   let containerEl;
+  let activityTimer = 0;
 
   const dispatch = createEventDispatcher();
+
+  onMount(() => {
+    const context = {
+      resetTimer() {
+        activityTimer = 0;
+      },
+    };
+
+    activities.add(context);
+
+    return () => activities.delete(context);
+  });
 
   $: if (active && containerEl) {
     containerEl.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     });
+  }
+
+  // This ticks every second in sync with the global timer.
+  timer.subscribe(() => {
+    if (active) {
+      activityTimer += 1;
+    }
+  });
+
+  function getActivityTime(elapsed) {
+    return seconds - elapsed;
+  }
+
+  function getRunningTime(elapsed) {
+    return (accumulatedSeconds + seconds) - elapsed;
   }
 
   function toggleCollapse(node, _active) {
@@ -94,15 +135,19 @@
 <section class="container" class:active bind:this={containerEl}>
   <header>
     <h2 class="title">{name}</h2>
-    <p class="activity-timer">-{minutes}:00</p>
+    <p class="activity-timer">
+      <TimeDisplay seconds={getActivityTime(activityTimer)} />
+    </p>
   </header>
   <div class="collapsible" use:toggleCollapse={active}>
-    <p class="timer">-5:00</p>
+    <p class="timer">
+      <TimeDisplay seconds={getRunningTime($timer)} />
+    </p>
     <Button on:click="{() => dispatch('next')}">
       Next Activity
     </Button>
     <div class="btn-back">
-      <Button warning on:click="{() => dispatch('back')}">
+      <Button secondary on:click="{() => dispatch('back')}">
         Prev Activity
       </Button>
     </div>

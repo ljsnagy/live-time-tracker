@@ -1,14 +1,10 @@
 import XLSX from 'xlsx';
+import Time from './Time';
 
 const TS_TIME_COL = 'A';
 const TS_ACTIVITY_COL = 'C';
 const TS_LENGTH_COL = 'D';
 const TS_ACTIVITY_LIST_OFFSET = 3;
-
-function toMinutes(time) {
-  const [hour, mins] = time.split(':');
-  return (Number(hour) * 60) + Number(mins);
-}
 
 export default function parseTimeSheet(file) {
   return new Promise((resolve, reject) => {
@@ -30,7 +26,7 @@ export default function parseTimeSheet(file) {
           activities.push({
             time: worksheet[`${TS_TIME_COL}${row}`].w,
             name: worksheet[`${TS_ACTIVITY_COL}${row}`].w,
-            minutes: toMinutes(worksheet[`${TS_LENGTH_COL}${row}`].w),
+            seconds: Time.parse(worksheet[`${TS_LENGTH_COL}${row}`].w),
           });
         }
 
