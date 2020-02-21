@@ -42,7 +42,7 @@
   }
 </style>
 
-<form class="container" on:submit|preventDefault>
+<div class="container">
   <input
     type="file"
     id="file-input"
@@ -64,4 +64,4 @@
       This is the xlsx file from the lesson plan
     </small>
   </label>
-</form>
+</div>
