@@ -1,14 +1,15 @@
 <script>
+  import uniqId from './utils/uniqId';
   import timer from './stores/Timer';
   import TimeSheetInput from './components/TimeSheetInput.svelte';
   import Activity, { resetTimers as resetActivityTimers } from './components/Activity.svelte';
   import Button from './components/Button.svelte';
 
   let activities = [];
-  let hasActivities = false;
   let activeActivity = -1;
 
   $: hasActivities = !!activities.length;
+  $: isLessonInProgress = activeActivity !== -1;
 
   function start() {
     timer.start();
@@ -16,7 +17,7 @@
   }
 
   function finish() {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Doesn't work in firefox?
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Very buggy in firefox?
     timer.stop();
   }
 
@@ -24,6 +25,15 @@
     timer.reset();
     resetActivityTimers();
     activeActivity = -1;
+  }
+
+  function onTimesheetParse(e) {
+    activities = e.detail.map((activity) => ({
+      ...activity,
+      id: uniqId(),
+    }));
+
+    reset();
   }
 
   function nextActivity() {
@@ -80,22 +90,20 @@
 <div class="container">
   <header>
     <h1>Live Time Tracker</h1>
-    <TimeSheetInput on:parse="{(e) => { activities = e.detail; }}"/>
+    <TimeSheetInput on:parse={onTimesheetParse} />
   </header>
 
   <main>
     {#if hasActivities}
       <div class="lesson-header">
-        {#if activeActivity === -1}
-          <Button on:click={start}>
-            Start Lesson
-          </Button>
+        {#if !isLessonInProgress}
+          <Button on:click={start}>Start Lesson</Button>
         {:else}
           <Button warning on:click={reset}>Reset Tracker</Button>
         {/if}
       </div>
     {/if}
-    {#each activities as { name, seconds }, index}
+    {#each activities as { id, name, seconds }, index (id)}
       <Activity
         {name}
         {seconds}
