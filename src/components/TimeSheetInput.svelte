@@ -4,9 +4,16 @@
 
   const dispatch = createEventDispatcher();
 
+  let error = false;
+
   async function handleTimeSheet(file) {
     if (file) {
-      dispatch('parse', await parseTimeSheet(file));
+      try {
+        dispatch('parse', await parseTimeSheet(file));
+        error = false;
+      } catch (e) {
+        error = true;
+      }
     }
   }
 </script>
@@ -40,6 +47,10 @@
   .file-help {
     opacity: 0.8;
   }
+
+  .error {
+    color: #dc3545;
+  }
 </style>
 
 <div class="container">
@@ -64,4 +75,7 @@
       This is the xlsx file from the lesson plan
     </small>
   </label>
+  {#if error}
+    <p class="error">Could not parse time tracker.</p>
+  {/if}
 </div>
