@@ -44,7 +44,7 @@
     });
   }
 
-  // This ticks every second in sync with the global timer.
+  // This ticks in sync with the global timer.
   (() => {
     let last = 0;
     timer.subscribe((secs) => {
